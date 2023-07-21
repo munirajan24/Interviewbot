@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Interview bot</string>
+    <string name="title_activity_interview">InterviewActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+</resources>
