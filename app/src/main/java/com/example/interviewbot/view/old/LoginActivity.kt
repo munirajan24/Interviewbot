@@ -1,4 +1,4 @@
-package com.example.interviewbot.view
+package com.example.interviewbot.view.old
 
 import android.content.Intent
 import android.os.Bundle
