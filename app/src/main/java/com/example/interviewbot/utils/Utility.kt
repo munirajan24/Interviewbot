@@ -1,5 +1,8 @@
 package com.example.interviewbot.utils
 
+import com.example.interviewbot.view.model.Category
+import com.example.interviewbot.view.model.Question
+
 object Utility {
 
     fun extractQuestions(input: String, type: String): List<String> {
@@ -23,12 +26,19 @@ object Utility {
         return questions
     }
 
-}
+    fun extractAllQuestions(input: String, categoryList: List<String>): MutableList<Category> {
+        val categories = mutableListOf<Category>()
 
-data class Question(
-    val text: String,
-    val type: String
-)
+        categoryList.forEach { category ->
+            val questions = extractQuestions(input, category)
+            categories.add(Category(category, questions.map { Question(it, category) }))
+        }
+        return categories
+
+    }
+
+
+}
 
 enum class QuestionType {
     JAVA,
