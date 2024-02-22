@@ -3,12 +3,17 @@ package com.example.interviewbot.view.screens
 
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,7 +63,13 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
 
     LaunchedEffect(key1 = Unit) {
         launch(Dispatchers.Default) {
-            categoryList = Utility.extractAllQuestions(Questions.getQuestions(), selectedCategories)
+            categoryList = Utility.extractAllQuestions(
+                Questions.getQuestions(),
+                selectedCategories,
+                data.value,
+                true
+            )
+            currentCategory.value = categoryList.firstOrNull()
         }
     }
 
@@ -92,6 +104,49 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
 //                .padding(16.dp),
 //            verticalArrangement = Arrangement.spacedBy(8.dp)
 //        ) {
+
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            itemsIndexed(selectedCategories) { _, category ->
+                Box(
+                    modifier = Modifier
+//                        .padding(horizontal =  4.dp, vertical = 4.dp)
+                        .background(
+                            if (currentCategory.value?.categoryName == category) MaterialTheme.colorScheme.primary.copy(
+                                alpha = 0.1f
+                            ) else Color.Transparent
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (currentCategory.value?.categoryName == category) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                ) {
+                    Button(
+                        modifier = Modifier
+                            .padding(horizontal = 3.dp, vertical = 1.dp),
+                        onClick = {
+                            // Update the current category when a button is clicked
+                            currentCategory.value =
+                                categoryList.find { it.categoryName == category }
+                            currentQuestionIndex.value = 0
+                            textToSpeech.speak(
+                                "${category} selected".lowercase(),
+                                TextToSpeech.QUEUE_FLUSH,
+                                null,
+                                null
+                            )
+                        }
+                    ) {
+                        Text(text = category)
+                    }
+                }
+            }
+        }
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
@@ -136,8 +191,28 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
             ) {
                 Button(
                     onClick = {
+                        val speech: String? = currentCategory.value?.let { category ->
+                            when {
+                                !category.questionList.isNullOrEmpty() -> {
+                                    category.questionList?.getOrNull(currentQuestionIndex.value)?.text
+                                }
+
+                                category.questionList.isNullOrEmpty() -> {
+                                    "There are no questions"
+                                }
+
+                                currentQuestionIndex.value >= category.questionList.size -> {
+                                    "This topic is over. Let's move to the next topic"
+                                }
+
+                                else -> {
+                                    "There are no questions"
+                                }
+                            }
+                        }
+
                         textToSpeech.speak(
-                            currentCategory.value?.questionList?.getOrNull(currentQuestionIndex.value)?.text,
+                            speech,
                             TextToSpeech.QUEUE_FLUSH,
                             null,
                             null
@@ -157,20 +232,29 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
 
                 Button(
                     onClick = {
-                        currentQuestionIndex.value++
-                        if (currentQuestionIndex.value >= (currentCategory.value?.questionList?.size ?: 0)) {
-                            currentQuestionIndex.value = 0
-                        }
 
-                        if (currentQuestionIndex.value >= (currentCategory.value?.questionList?.size ?: 0)) {
-                            currentQuestionIndex.value = 0
-                            val currentIndex = categoryList.indexOf(currentCategory.value)
-                            val nextIndex =
-                                if (currentIndex == categoryList.size - 1) 0 else currentIndex + 1
-                            currentCategory.value = categoryList.getOrNull(nextIndex)
+                        val speech: String? = currentCategory.value?.let { category ->
+                            currentQuestionIndex.value++
+                            val questionList = category.questionList
+                            val questionIndex = currentQuestionIndex.value
+
+
+                            if (!questionList.isNullOrEmpty() && questionIndex >= questionList.size) {
+                                categoryList.indexOf(category).let { currentIndex ->
+                                    val nextIndex =
+                                        if (currentIndex == categoryList.size - 1) 0 else currentIndex + 1
+                                    currentCategory.value = categoryList.getOrNull(nextIndex)
+                                }
+                            }
+
+                            when {
+                                questionList.isNullOrEmpty() -> "There are no questions"
+                                questionIndex >= questionList.size -> "This topic is over. Let's move to the next topic"
+                                else -> questionList[questionIndex].text
+                            }
                         }
                         textToSpeech.speak(
-                            currentCategory.value?.questionList?.getOrNull(currentQuestionIndex.value)?.text,
+                            speech,
                             TextToSpeech.QUEUE_FLUSH,
                             null,
                             null

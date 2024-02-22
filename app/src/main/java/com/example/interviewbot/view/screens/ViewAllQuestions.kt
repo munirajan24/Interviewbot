@@ -32,7 +32,7 @@ import com.example.interviewbot.utils.Utility
 fun NextComposable(selectedCategories: List<Question>) {
     val context = LocalContext.current
     val preferencesManager = remember { PreferencesManager(context) }
-    val data = remember { mutableStateOf(preferencesManager.getData("questionsCount", 10)) }
+    val count = remember { mutableStateOf(preferencesManager.getData("questionsCount", 10)) }
 
 //    var kotlinQuestions: List<String> = remember { mutableStateListOf() }
 //

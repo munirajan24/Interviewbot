@@ -24,6 +24,7 @@ import com.example.interviewbot.view.model.Question
 import com.example.interviewbot.view.screens.InterviewSpeaker
 import com.example.interviewbot.view.screens.NextComposable
 import com.example.interviewbot.view.screens.Categories
+import com.example.interviewbot.view.screens.MainActivityScreen
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -32,79 +33,11 @@ class InterviewActivityNew : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BottomAppBarActivity()
+            MainActivityScreen()
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomAppBarActivity() {
-    val navController = rememberNavController()
-
-    Scaffold(
-        bottomBar = {
-            NavigationBar() {
-                NavigationBarItem(
-                    selected = navController.currentDestination?.route == "Home",
-                    onClick = {
-                        navController.navigate("Home") {
-                            launchSingleTop = true
-                            popUpTo(navController.graph.startDestinationId)
-                        }
-                    },
-                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
-                )
-                NavigationBarItem(
-                    selected = navController.currentDestination?.route == "Quick",
-                    onClick = {
-                        navController.navigate("Quick") {
-                            launchSingleTop = true
-                            popUpTo(navController.graph.startDestinationId)
-                        }
-                    },
-                    icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorites") },
-                    label = { Text("Favorites") }
-                )
-                NavigationBarItem(
-                    selected = navController.currentDestination?.route == "Settings",
-                    onClick = {
-                        navController.navigate("Settings") {
-                            launchSingleTop = true
-                            popUpTo(navController.graph.startDestinationId)
-                        }
-                    },
-                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
-                    label = { Text("Settings") }
-                )
-            }
-        }
-    ) {it
-
-        NavHost(navController, startDestination = "Quick") {
-            composable("Home") { Home(navController) }
-            composable("Quick") { Quick(navController) }
-            composable("Settings") { Settings(navController) }
-            composable(
-                "next/{data}",
-                arguments = listOf(navArgument("data") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val dataJson = backStackEntry.arguments?.getString("data")
-                val dataList = Gson().fromJson<List<Question>>(dataJson, object : TypeToken<List<Question>>() {}.type)
-                NextComposable(selectedCategories = dataList)
-            }
-            composable(
-                "InterviewSpeaker/{data}",
-                arguments = listOf(navArgument("data") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val dataJson = backStackEntry.arguments?.getString("data")
-                val dataList = Gson().fromJson<List<String>>(dataJson, object : TypeToken<List<String>>() {}.type)
-                InterviewSpeaker(selectedCategories = dataList)
-            }
-        }
-    }
-}
 
 
 @Composable

@@ -56,7 +56,8 @@ fun Categories(
         "Spring Boot",
         "Microservice",
     )
-    val selectedCategories by remember { mutableStateOf(mutableListOf("")) }
+//    val selectedCategories by remember { mutableStateOf(mutableListOf<String()) }
+    val selectedCategories = remember { mutableStateOf(arrayListOf<String>()) }
 
     val questionsCount = remember { mutableStateOf(50) }
     val context = LocalContext.current
@@ -72,8 +73,8 @@ fun Categories(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (!selectedCategories.isEmpty()) {
-                        val dataJson = Gson().toJson(selectedCategories)
+                    if (!selectedCategories.value.isEmpty()) {
+                        val dataJson = Gson().toJson(selectedCategories.value)
                         val encodedJson = Uri.encode(dataJson)
                         navController.navigate("InterviewSpeaker/$encodedJson")
                     } else {
@@ -110,7 +111,7 @@ fun Categories(
                             preferencesManager.saveData("questionsCount", numberPicker.value)
                         }
                         minValue = 10
-                        maxValue = 100
+                        maxValue = 1000
                     }
                 }
             )
@@ -124,9 +125,9 @@ fun Categories(
                             .clickable {
                                 checkedState.value = !checkedState.value
                                 if (checkedState.value) {
-                                    selectedCategories.add(category)
+                                    selectedCategories.value.add(category)
                                 } else {
-                                    selectedCategories.remove(category)
+                                    selectedCategories.value.remove(category)
                                 }
                             }
                     ) {
@@ -140,9 +141,9 @@ fun Categories(
                                 onCheckedChange = { isChecked ->
                                     checkedState.value = isChecked
                                     if (isChecked) {
-                                        selectedCategories.add(category)
+                                        selectedCategories.value.add(category)
                                     } else {
-                                        selectedCategories.remove(category)
+                                        selectedCategories.value.remove(category)
                                     }
                                 }
                             )
