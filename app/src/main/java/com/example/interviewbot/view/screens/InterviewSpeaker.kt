@@ -57,10 +57,6 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
     val currentQuestionIndex = remember { mutableStateOf(0) }
     val currentCategory = remember { mutableStateOf(categoryList.firstOrNull()) }
 
-    var questionIndex = remember { mutableStateOf(0) }
-    var questionCategory = remember { mutableStateOf("") }
-
-
     LaunchedEffect(key1 = Unit) {
         launch(Dispatchers.Default) {
             categoryList = Utility.extractAllQuestions(
@@ -153,7 +149,7 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
                 .background(color = Color.White)
                 .padding(16.dp)
         ) {
-            val (categoryText, questionText, playButton, stopButton, nextButton) = createRefs()
+            val (categoryText, questionText, playButtonRow, nextButtonRow) = createRefs()
 
             Text(
                 text = currentCategory.value?.categoryName ?: "",
@@ -180,12 +176,13 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
                     }
             )
 
+
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .constrainAs(playButton) {
-                        bottom.linkTo(parent.bottom, margin = 70.dp)
+                    .constrainAs(playButtonRow) {
+                        bottom.linkTo(nextButtonRow.top, margin = 16.dp)
                         start.linkTo(parent.start)
                     }
             ) {
@@ -219,6 +216,7 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
                         )
                     },
                     modifier = Modifier.padding(end = 8.dp)
+
                 ) {
                     Text(text = "Play")
                 }
@@ -228,6 +226,39 @@ fun InterviewSpeaker(selectedCategories: List<String>) {
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
                     Text(text = "Stop")
+                }
+            }
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(nextButtonRow) {
+                        bottom.linkTo(parent.bottom, margin = 70.dp)
+                        start.linkTo(parent.start)
+                    }
+            ) {
+                Button(
+                    onClick = {
+                        val speech: String? = currentCategory.value?.let { category ->
+                            if (currentQuestionIndex.value == 0) {
+                                "This is the first question"
+                            } else {
+                                currentQuestionIndex.value--
+                                val questionList = category.questionList
+                                questionList?.getOrNull(currentQuestionIndex.value)?.text
+                            }
+                        }
+
+                        textToSpeech.speak(
+                            speech,
+                            TextToSpeech.QUEUE_FLUSH,
+                            null,
+                            null
+                        )
+                    },
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Text(text = "Previous")
                 }
 
                 Button(

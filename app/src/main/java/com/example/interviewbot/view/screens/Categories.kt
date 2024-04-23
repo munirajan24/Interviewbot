@@ -5,16 +5,19 @@ import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Card
@@ -24,15 +27,16 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.example.interviewbot.utils.PreferencesManager
-import com.example.interviewbot.view.model.Question
 import com.example.interviewbot.utils.Questions
 import com.google.gson.Gson
 
@@ -92,31 +95,65 @@ fun Categories(
         }
     ) {
         it
-        Column(Modifier.fillMaxWidth()) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+        ) {
             Text(
                 text = "Select Categories",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(vertical = 16.dp, horizontal = 8.dp)
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.onPrimary)
             )
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 8.dp)
+                    .border(
+                        width = 1.dp,
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
 
-            AndroidView(
-                modifier = Modifier.fillMaxWidth(),
-                factory = { context ->
-                    NumberPicker(context).apply {
-                        setOnValueChangedListener { numberPicker, i, i2 ->
-                            questionsCount.value = numberPicker.value
-                            preferencesManager.saveData("questionsCount", numberPicker.value)
+                Text(
+                    text = "Select number of questions",
+                    style = MaterialTheme.typography.bodyMedium,
+
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                )
+
+                AndroidView(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    factory = { context ->
+                        var formatter: NumberPicker.Formatter? = NumberPicker.Formatter { value ->
+                            val temp = value * 5
+                            "" + temp
                         }
-                        minValue = 10
-                        maxValue = 1000
-                    }
-                }
-            )
 
-            LazyColumn() {
+                        NumberPicker(context).apply {
+                            setOnValueChangedListener { numberPicker, i, i2 ->
+                                questionsCount.value = numberPicker.value
+                                preferencesManager.saveData("questionsCount", numberPicker.value)
+                            }
+                            minValue = 10
+                            maxValue = 1000
+                        }
+                    }
+                )
+            }
+
+            LazyColumn(
+                Modifier
+                    .fillMaxSize()
+//                    .padding(bottom = 80.dp)
+            ) {
                 itemsIndexed(categories) { index, category ->
                     val checkedState = remember { mutableStateOf(false) }
                     Card(

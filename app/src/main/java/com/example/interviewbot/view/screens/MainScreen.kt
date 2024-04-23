@@ -31,41 +31,41 @@ fun MainActivityScreen() {
 
     Scaffold(
         bottomBar = {
-            NavigationBar() {
-                NavigationBarItem(
-                    selected = navController.currentDestination?.route == "Home",
-                    onClick = {
-                        navController.navigate("Home") {
-                            launchSingleTop = true
-                            popUpTo(navController.graph.startDestinationId)
-                        }
-                    },
-                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
-                )
-                NavigationBarItem(
-                    selected = navController.currentDestination?.route == "Quick",
-                    onClick = {
-                        navController.navigate("Quick") {
-                            launchSingleTop = true
-                            popUpTo(navController.graph.startDestinationId)
-                        }
-                    },
-                    icon = { Icon(Icons.Filled.List, contentDescription = "Quick") },
-                    label = { Text("Quick") }
-                )
-                NavigationBarItem(
-                    selected = navController.currentDestination?.route == "Settings",
-                    onClick = {
-                        navController.navigate("Settings") {
-                            launchSingleTop = true
-                            popUpTo(navController.graph.startDestinationId)
-                        }
-                    },
-                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
-                    label = { Text("Settings") }
-                )
-            }
+//            NavigationBar() {
+//                NavigationBarItem(
+//                    selected = navController.currentDestination?.route == "Home",
+//                    onClick = {
+//                        navController.navigate("Home") {
+//                            launchSingleTop = true
+//                            popUpTo(navController.graph.startDestinationId)
+//                        }
+//                    },
+//                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
+//                    label = { Text("Home") }
+//                )
+//                NavigationBarItem(
+//                    selected = navController.currentDestination?.route == "Quick",
+//                    onClick = {
+//                        navController.navigate("Quick") {
+//                            launchSingleTop = true
+//                            popUpTo(navController.graph.startDestinationId)
+//                        }
+//                    },
+//                    icon = { Icon(Icons.Filled.List, contentDescription = "Quick") },
+//                    label = { Text("Quick") }
+//                )
+//                NavigationBarItem(
+//                    selected = navController.currentDestination?.route == "Settings",
+//                    onClick = {
+//                        navController.navigate("Settings") {
+//                            launchSingleTop = true
+//                            popUpTo(navController.graph.startDestinationId)
+//                        }
+//                    },
+//                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
+//                    label = { Text("Settings") }
+//                )
+//            }
         }
     ) {it
 
