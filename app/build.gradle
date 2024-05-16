@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.interviewbot'
-    compileSdk 33
+    namespace 'com.dreavee.interviewbot'
+    compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.interviewbot"
+        applicationId "com.dreavee.interviewbot"
         minSdk 24
         targetSdk 33
         versionCode 1
